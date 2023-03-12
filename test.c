@@ -14,7 +14,7 @@ void menu() {
 int main(){
 	int input = 0;
 	//创建通讯录
-	struct Contact con;//con就是通讯录，里面包含：1000个元素和当前个数
+	struct Contact con;//con就是通讯录，里面包含：data指针、size、capacity
 	InitContact(&con);
 
 	do {
@@ -42,6 +42,7 @@ int main(){
 			break;
 		case EXIT:
 			printf("退出通讯录！\n");
+			ExitContact(&con);
 			exit(0);
 			break;
 		default:

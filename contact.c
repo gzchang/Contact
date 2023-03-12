@@ -3,9 +3,13 @@
 #include "contact.h"
 
 void InitContact(struct Contact* con) {
-	memset(con->data,0,sizeof(con->data));//sizeof跟数组名 直接是这个数组的大小 单位是字节
+	//memset(con->data,0,sizeof(con->data));//sizeof跟数组名 直接是这个数组的大小 单位是字节
+	//con->Size = 0;
+	con->data = (struct People*)malloc(sizeof(struct People) * 3);
+	if (con->data == NULL)
+		return;
 	con->Size = 0;
-
+	con->Capacity = DEFAULT_CAPACITY;
 }
 
 // 支持函数 接口不需要被暴露 static 修饰的函数只能在此源文件使用
@@ -19,25 +23,38 @@ static int FindByName(const struct Contact* con, char name[MaxName]) {
 	return -1;
 }
 
-void AddContact(struct Contact* con) {
-	if (con->Size==MaxSize)
+static void CheckCapacity(struct Contact* con) {
+	if (con->Size == con->Capacity)
 	{
-		printf("通讯录名额已满，无法增加\n");
+		struct People* ptr = (People*)realloc(con->data, (con->Capacity + 2) * sizeof(struct People));
+		if (ptr != NULL) {
+			con->data = ptr;
+			con->Capacity += 2;
+			printf("增容成功！\n");
+		}
+		else {
+			printf("增容失败\n");
+		}
 	}
-	else {
-		printf("请输入名字：");
-		scanf("%s", con->data[con->Size].name);
-		printf("请输入年龄；");
-		scanf("%d", &(con->data[con->Size].age));
-		printf("请输入性别；");
-		scanf("%s", (con->data[con->Size].sex));
-		printf("请输入电话；");
-		scanf("%s", (con->data[con->Size].tele));
-		printf("请输入地址；");
-		scanf("%s", (con->data[con->Size].addr));
-		con->Size++;
-		printf("添加成功!\n");
-	}
+
+}
+
+void AddContact(struct Contact* con) {
+	//满了就增容 不满不干
+	CheckCapacity(con);//检测当前通讯录的容量
+	// 增加数据
+	printf("请输入名字：");
+	scanf("%s", con->data[con->Size].name);
+	printf("请输入年龄；");
+	scanf("%d", &(con->data[con->Size].age));
+	printf("请输入性别；");
+	scanf("%s", (con->data[con->Size].sex));
+	printf("请输入电话；");
+	scanf("%s", (con->data[con->Size].tele));
+	printf("请输入地址；");
+	scanf("%s", (con->data[con->Size].addr));
+	con->Size++;
+	printf("添加成功!\n");
 }
 
 void ShowContact(const struct Contact* con) {
@@ -130,10 +147,10 @@ void ModifyContact(struct Contact* con) {
 void SortContact(struct Contact* con) {
 	int i = 0;
 	int j = 0;
+	struct People tmp;
 	for (i = 0; i < con->Size-1; i++) {
 		for (j = i; j < con->Size - 1 - i; j++) {
-			if (strcmp(con->data[j].name, con->data[j + 1].name)) {
-				struct People tmp;
+			if (strcmp(con->data[j].name, con->data[j + 1].name)>0) {
 				tmp = con->data[j];
 				con->data[j] = con->data[j + 1];
 				con->data[j + 1] = tmp;
@@ -143,4 +160,9 @@ void SortContact(struct Contact* con) {
 	printf("排序完毕\n");
 	printf("***************\n");
 	ShowContact(con);
+}
+
+void ExitContact(Contact* con) {
+	free(con->data);
+	con->data = NULL;
 }
