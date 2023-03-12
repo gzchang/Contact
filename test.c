@@ -7,7 +7,7 @@ void menu() {
 	printf("***** 1.add\t\t2.del\t****\n");
 	printf("***** 3.search\t\t4.modify\t****\n");
 	printf("***** 5.show\t\t6.sort\t****\n");
-	printf("***** 0.exit\t\t\t****\n");
+	printf("***** 7.save\t\t0.exit\t****\n");
 	printf("**********************************\n");
 }
 
@@ -42,8 +42,12 @@ int main(){
 			break;
 		case EXIT:
 			printf("退出通讯录！\n");
+			SaveContact(&con);
 			ExitContact(&con);
 			exit(0);
+			break;
+		case SAVE:
+			SaveContact(&con);
 			break;
 		default:
 			printf("选择错误！\n");

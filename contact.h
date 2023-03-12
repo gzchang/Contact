@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #define MaxName 20
 #define MaxSex 5
@@ -16,7 +17,8 @@ enum Option {
 	SEARCH,
 	MODIFY,
 	SHOW,
-	SORT
+	SORT,
+	SAVE
 };
 
 
@@ -45,3 +47,5 @@ void SearchContact(const struct Contact* con);
 void ModifyContact(struct Contact* con);
 void SortContact(struct Contact* con);
 void ExitContact(Contact* con);
+void SaveContact(Contact* con);
+void LoadContact(Contact* con);

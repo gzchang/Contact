@@ -2,14 +2,38 @@
 
 #include "contact.h"
 
+static void CheckCapacity(struct Contact* con);
 void InitContact(struct Contact* con) {
+
 	//memset(con->data,0,sizeof(con->data));//sizeof跟数组名 直接是这个数组的大小 单位是字节
 	//con->Size = 0;
+
 	con->data = (struct People*)malloc(sizeof(struct People) * 3);
 	if (con->data == NULL)
 		return;
 	con->Size = 0;
 	con->Capacity = DEFAULT_CAPACITY;
+	//把文件存放的信息 加载到通讯录里面
+	LoadContact(con);
+}
+
+void LoadContact(Contact* con) {
+	FILE* pf = fopen("./contact.dat", "rb");
+	if (pf == NULL)
+	{
+		printf("%s\n", strerror(errno));
+		return;
+	}
+	// 读取文件 放到通讯录中
+	People tmp = {0};
+	while (fread(&tmp, sizeof(People), 1, pf)) {// 一个一个读，fread函数 返回实际读到的个数 读到0其实就是结束位置
+		CheckCapacity(con);
+		con->data[con->Size] = tmp;
+		con->Size++;
+	}
+
+	fclose(pf);
+	pf = NULL;
 }
 
 // 支持函数 接口不需要被暴露 static 修饰的函数只能在此源文件使用
@@ -165,4 +189,21 @@ void SortContact(struct Contact* con) {
 void ExitContact(Contact* con) {
 	free(con->data);
 	con->data = NULL;
+}
+
+void SaveContact(Contact* con) {
+	FILE* pf = fopen("./contact.dat", "wb");
+	if (pf == NULL)
+	{
+		printf("%s\n", strerror(errno));
+		return ;
+	}
+	// 写通讯录到文件中
+	int i = 0;
+	for (i = 0; i < con->Size; i++) {
+		fwrite(&(con->data[i]), sizeof(People), 1, pf);
+	}
+	printf("保存成功!\n");
+	fclose(pf);
+	pf = NULL;
 }
